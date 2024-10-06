@@ -10,6 +10,7 @@ function App() {
       <div className="h-screen flex items-center justify-center">
         <CardWithForm />
       </div>
+      
       <StatCard />
       <DifferenceCard />
     </>
