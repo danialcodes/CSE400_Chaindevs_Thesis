@@ -33,9 +33,6 @@ https://cse-400-chaindevs-thesis.vercel.app
 The backend of this project is designed to handle data processing and API requests efficiently.
 
 ### Technologies Used
-- Node.js
-- Express
-- MongoDB
 
 ### Setup Instructions
 1. Navigate to the `backend` directory:
