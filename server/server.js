@@ -8,7 +8,9 @@ require('dotenv').config();
 
 const app = express();
 app.use(bodyParser.json());
-
+app.get('/', (req, res) => {
+    res.send('Hello from the server!');
+});
 app.post('/execute', async (req, res) => {
     const { networks, contractAddresses, abi, functionName, value, numberOfTransactions } = req.body;
 
