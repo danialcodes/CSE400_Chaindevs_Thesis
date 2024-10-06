@@ -46,7 +46,8 @@ export function CardWithForm() {
   });
 
   const onSubmit = async (data) => {
-    const apiUrl = "http://localhost:5000/execute";
+    const deployedapiUrl = `${import.meta.env.VITE_DEPLOYED_SERVER_URL}/execute`;
+    const localapiUrl = "http://localhost:5000/execute";
     const jsonData = {
       networks: {
         Ethereum: data.ethNetwork,
@@ -90,7 +91,7 @@ export function CardWithForm() {
       numberOfTransactions: 2,
     };
 
-    const res = await axios.post(apiUrl, jsonData);
+    const res = await axios.post(deployedapiUrl, jsonData);
 
     console.log(res.data);
   };
