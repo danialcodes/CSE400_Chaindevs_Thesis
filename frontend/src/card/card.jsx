@@ -35,6 +35,9 @@ const formSchema = z.object({
 });
 
 export function CardWithForm() {
+  const deployedapiUrl = `${import.meta.env.VITE_DEPLOYED_SERVER_URL}/execute`;
+  const localapiUrl = `${import.meta.env.VITE_LOCAL_SERVER_URL}/execute`;
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,8 +49,6 @@ export function CardWithForm() {
   });
 
   const onSubmit = async (data) => {
-    const deployedapiUrl = `${import.meta.env.VITE_DEPLOYED_SERVER_URL}/execute`;
-    const localapiUrl = "http://localhost:5000/execute";
     const jsonData = {
       networks: {
         Ethereum: data.ethNetwork,
@@ -57,7 +58,7 @@ export function CardWithForm() {
         ethereum: data.ethContractAddress,
         tron: data.tronContractAddress,
       },
-      
+
       abi: [
         {
           inputs: [
@@ -94,6 +95,7 @@ export function CardWithForm() {
     const res = await axios.post(deployedapiUrl, jsonData);
 
     console.log(res.data);
+    
   };
 
   return (
@@ -102,7 +104,7 @@ export function CardWithForm() {
         <CardTitle>Chaindevs Thesis Project</CardTitle>
         <CardDescription>Deploy your new project in one-click.</CardDescription>
       </CardHeader>
-      <Form {...form} >
+      <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="flex justify-between gap-5">
             <Card className="w-[350px]">
