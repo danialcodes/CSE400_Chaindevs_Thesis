@@ -1,0 +1,11 @@
+Default gas Price
+Transaction 1: GasPrice: 64484602, GasLimit: 26640, Ether Used: 0.00000171786979728 ETH
+Transaction 3: GasPrice: 64484602, GasLimit: 26640, Ether Used: 0.00000153731291168 ETH
+Transaction 9: GasPrice: 64484602, GasLimit: 26640, Ether Used: 0.00000153731291168 ETH
+Transaction 2: GasPrice: 64484602, GasLimit: 26640, Ether Used: 0.00000153731291168 ETH
+Transaction 4: GasPrice: 64484602, GasLimit: 26640, Ether Used: 0.00000153731291168 ETH
+Transaction 6: GasPrice: 64484602, GasLimit: 26640, Ether Used: 0.00000153731291168 ETH
+Transaction 5: GasPrice: 64484602, GasLimit: 26640, Ether Used: 0.00000153731291168 ETH
+Transaction 7: GasPrice: 64484602, GasLimit: 26640, Ether Used: 0.00000153731291168 ETH
+Transaction 8: GasPrice: 64484602, GasLimit: 26640, Ether Used: 0.00000153731291168 ETH
+Transaction 10: GasPrice: 64484602, GasLimit: 26640, Ether Used: 0.00000153731291168 ETH

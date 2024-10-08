@@ -1,0 +1,4 @@
+Default gas Price
+Average Latency: 31.484999999999996s
+Throughput (TPS): 0.16666666666666666 at 2024-10-08T05:20:22.633Z
+Blocks Produced: 5, Block Production Rate: 0.016666700131987226/sec
