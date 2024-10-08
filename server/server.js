@@ -2,31 +2,31 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
-const executeEthereum = require('./Ethereum.js');
-const executeTron = require('./Tron.js');
+const executeEthereum = require('./EthereumParallel.js');
+const executeTron = require('./TronParallel.js');
 require('dotenv').config();
 
 const app = express();
 app.use(bodyParser.json());
 
 app.post('/execute', async (req, res) => {
-    const { networks, contractAddresses, abi, functionName, value, numberOfTransactions } = req.body;
+    const { networks, contractAddresses, abi, functionName, params, numberOfTransactions } = req.body;
 
-    if (!networks || !contractAddresses || !abi || !functionName || !value || !numberOfTransactions) {
+    if (!networks || !contractAddresses || !abi || !functionName || !params || !numberOfTransactions) {
         return res.status(400).json({ error: 'Missing required parameters.' });
     }
 
     // Paths to the generated text files
     const ethereumLogFile = path.join(__dirname, 'Ethereum_logs_individual.txt');
     const ethTPSLogFile = path.join(__dirname, 'Eth_TPS&AvgLatency_log.txt');
-    const ethWalletResourceFile = path.join(__dirname,"EthWalletResourceUsage.txt");
+    const ethWalletResourceFile = path.join(__dirname, "EthWalletResourceUsage.txt");
     const ethResourceLogFile = path.join(__dirname, 'Ethereum_Resource_Usage.txt');
 
     const tronLogFile = path.join(__dirname, 'Tron_logs_individual.txt'); // Assuming you have a similar file for Tron
     const tronTPSLogFile = path.join(__dirname, 'Tron_TPS&AvgLatency_log.txt');
     const tronWalletResourceFile = path.join(__dirname, 'TronWalletResourceUsage.txt');
     const tronResourceLogFile = path.join(__dirname, 'Tron_Resource_Usage.txt');
-    
+
 
     // Function to delete old files
     const deleteOldFiles = () => {
@@ -55,8 +55,8 @@ app.post('/execute', async (req, res) => {
 
         // Run Ethereum and Tron scripts in parallel
         await Promise.all([
-            executeEthereum(networks.Ethereum, contractAddresses.ethereum, abi, functionName, value, numberOfTransactions),
-            executeTron(networks.Tron, contractAddresses.tron, abi, functionName, value, numberOfTransactions)
+            executeEthereum(networks.Ethereum, contractAddresses.ethereum, abi, functionName, params, numberOfTransactions),
+            executeTron(networks.Tron, contractAddresses.tron, abi, functionName, params, numberOfTransactions)
         ]);
 
         // Read file contents
