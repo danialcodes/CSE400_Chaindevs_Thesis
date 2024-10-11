@@ -1,4 +1,4 @@
 Default gas Price
-Blocks Produced: 5, Block Production Rate: 0.08333333333333333/sec at 2024-10-11T06:48:48.023Z
-Actual TPS: 0.09694097853633532 over 72.2088853s
-Average Latency: 53.26457561428572s
+Blocks Produced: 5, Block Production Rate: 0.08333333333333333/sec at 2024-10-11T07:03:38.342Z
+TPS: 0.03651724443556985 over 191.6902578s
+Average Latency: 185.65259245714287s

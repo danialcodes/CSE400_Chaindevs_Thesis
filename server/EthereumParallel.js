@@ -96,9 +96,6 @@ async function executeEthereum(network, contractAddress, contractAbi, functionNa
                 const transactionPromises = [];
                 let totalLatency = 0;
                 const walletNonces = {};
-
-                const startTime = process.hrtime(); // Start time for TPS measurement
-
                 for (let i = 0; i < numberOfTransactions; i++) {
                     const wallet = wallets[walletCount];
                     if (!walletNonces[wallet.address]) {
@@ -124,14 +121,10 @@ async function executeEthereum(network, contractAddress, contractAbi, functionNa
                         totalLatency += latency;
                     }
                 });
-
-                // End time for TPS measurement
-                const endTime = process.hrtime(startTime);
-                const actualTimeTaken = endTime[0] + endTime[1] / 1e9; // Convert to seconds
-
-                const tps = numberOfTransactions / actualTimeTaken;
+                const TimeTaken = Math.max(...latencies)
+                const tps = numberOfTransactions / TimeTaken;
                 console.log(`Actual TPS: ${tps}`);
-                fs.appendFileSync(tpsAndLatencyLog, `Actual TPS: ${tps} over ${actualTimeTaken}s\n`);
+                fs.appendFileSync(tpsAndLatencyLog, `TPS: ${tps} over ${TimeTaken}s\n`);
 
                 if (totalLatency > 0) {
                     measureLatency(totalLatency, numberOfTransactions);
@@ -161,5 +154,4 @@ async function executeEthereum(network, contractAddress, contractAbi, functionNa
    
 }
 
-// Export the function so it can be called from server.js
 module.exports = executeEthereum;

@@ -1,7 +1,8 @@
 Default gas Price
-Transaction 2 , Latency: 63.7876377s
-Transaction 1 , Latency: 65.8971472s
-Transaction 5 , Latency: 60.0510614s
-Transaction 3 , Latency: 61.8675275s
-Transaction 6 , Latency: 59.7758489s
-Transaction 4 , Latency: 61.4728066s
+Transaction 4 , Latency: 182.4052629s
+Transaction 2 , Latency: 184.6416009s
+Transaction 3 , Latency: 182.0417107s
+Transaction 1 , Latency: 186.0326141s
+Transaction 5 , Latency: 181.6568684s
+Transaction 6 , Latency: 191.0998324s
+Transaction 7 , Latency: 191.6902578s
