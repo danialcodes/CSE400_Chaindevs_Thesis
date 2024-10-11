@@ -2,6 +2,7 @@ const { ethers } = require('ethers');
 const pidusage = require('pidusage'); // Import pidusage for resource monitoring
 const fs = require('fs');
 require('dotenv').config();
+
 // Log files for transactions and resource utilization
 const logFile = 'Ethereum_logs_individual.txt';
 const tpsAndLatencyLog = 'Eth_TPS&AvgLatency_log.txt';
@@ -13,14 +14,11 @@ async function executeEthereum(network, contractAddress, contractAbi, functionNa
     // Initialize the Ethereum provider and wallet
     const provider = new ethers.providers.JsonRpcProvider(network);
     const privateKeys = JSON.parse(process.env.privateKeys);
-    const wallets = []
-    for(let i=0;i<privateKeys.length;i++){
+    const wallets = [];
+    for (let i = 0; i < privateKeys.length; i++) {
         const wallet = new ethers.Wallet(privateKeys[i], provider);
-        wallets.push(wallet)
-    } 
-
-    // Measurement period in seconds
-    const measurementPeriod = 60;
+        wallets.push(wallet);
+    }
 
     async function sendTransactions() {
         async function executeTransaction(gasPriceMultiplier, index, wallet, nonce) {
@@ -33,16 +31,17 @@ async function executeEthereum(network, contractAddress, contractAbi, functionNa
                 const gasPrice = baseGasPrice.mul(gasPriceMultiplier);
 
                 // Estimate the gas required for this transaction
-                const gasLimit = await contract.estimateGas[functionName](params.value, { gasPrice });             
-                const startTime = Date.now();
+                const gasLimit = await contract.estimateGas[functionName](params.value, { gasPrice });
+                const startTime = process.hrtime(); // Start high-resolution time
                 // Include the estimated gasLimit along with the gasPrice
-                const tx = await contract[functionName](params.value, { gasPrice, gasLimit ,nonce});
+                const tx = await contract[functionName](params.value, { gasPrice, gasLimit, nonce });
                 console.log(`Transaction ${index} sent with gasPrice ${gasPrice.toString()} and gasLimit ${gasLimit.toString()}:`, tx.hash);
 
                 const receipt = await tx.wait();
-                const endTime = Date.now();
+                const endTime = process.hrtime(startTime); // End high-resolution time
 
-                const latency = (endTime - startTime) / 1000;
+                // Convert hrtime to seconds (endTime[0] gives seconds, endTime[1] gives nanoseconds)
+                const latency = endTime[0] + endTime[1] / 1e9;
                 console.log(`Transaction ${index} mined: ${receipt.transactionHash}, Latency: ${latency}s`);
 
                 const gasUsed = receipt.gasUsed;
@@ -61,7 +60,7 @@ async function executeEthereum(network, contractAddress, contractAbi, functionNa
 
                 // Log to files
                 fs.appendFileSync(logFile, `Transaction ${index} , Latency: ${latency}s\n`);
-                fs.appendFileSync(ethWalletResource, `Transaction ${index}: GasPrice: ${gasPrice.toString()}, GasLimit: ${gasLimit.toString()}, Ether Used: ${etherUsed} ETH\n`)
+                fs.appendFileSync(ethWalletResource, `Transaction ${index}: GasPrice: ${gasPrice.toString()}, GasLimit: ${gasLimit.toString()}, Ether Used: ${etherUsed} ETH\n`);
                 fs.appendFileSync(resourceUsageLog, `Transaction ${index} - CPU Used: ${cpuUsage}%, Memory Used: ${memoryUsage} MB\n`);
 
                 return latency;
@@ -78,7 +77,6 @@ async function executeEthereum(network, contractAddress, contractAbi, functionNa
             }
         }
 
-
         function measureLatency(totalLatency, numOfTransactions) {
             const averageLatency = totalLatency / numOfTransactions;
             console.log(`Average Latency: ${averageLatency}s`);
@@ -86,34 +84,39 @@ async function executeEthereum(network, contractAddress, contractAbi, functionNa
         }
 
         const gasPriceMultipliers = [1];
-        
         for (const multiplier of gasPriceMultipliers) {
-            let walletCount = 0
+            let walletCount = 0;
             const header = multiplier === 1 ? 'Default gas Price\n' : `${multiplier}x the default gas Price\n`;
             fs.appendFileSync(logFile, `${header}`);
             fs.appendFileSync(tpsAndLatencyLog, `${header}`);
             fs.appendFileSync(ethWalletResource, `${header}`);
             fs.appendFileSync(resourceUsageLog, `${header}`);
+
             const sendAndMeasure = async () => {
                 const transactionPromises = [];
                 let totalLatency = 0;
-                const walletNonces = {}
+                const walletNonces = {};
+
+                const startTime = process.hrtime(); // Start time for TPS measurement
+
                 for (let i = 0; i < numberOfTransactions; i++) {
                     const wallet = wallets[walletCount];
                     if (!walletNonces[wallet.address]) {
                         walletNonces[wallet.address] = await provider.getTransactionCount(wallet.address, 'latest');
                     }
 
-                    const currentNonce = walletNonces[wallet.address]; 
-                    const transactionPromise = executeTransaction(multiplier, i + 1,wallet,currentNonce); // Pass transaction index
+                    const currentNonce = walletNonces[wallet.address];
+                    const transactionPromise = executeTransaction(multiplier, i + 1, wallet, currentNonce); // Pass transaction index
                     transactionPromises.push(transactionPromise);
                     walletNonces[wallet.address]++;
-                    //await new Promise(resolve => setTimeout(resolve, 1000)); // Pause between transactions
+
                     walletCount++;
                     if (walletCount === wallets.length) {
                         walletCount = 0;
                     }
                 }
+
+                
 
                 const latencies = await Promise.all(transactionPromises);
                 latencies.forEach(latency => {
@@ -122,36 +125,40 @@ async function executeEthereum(network, contractAddress, contractAbi, functionNa
                     }
                 });
 
+                // End time for TPS measurement
+                const endTime = process.hrtime(startTime);
+                const actualTimeTaken = endTime[0] + endTime[1] / 1e9; // Convert to seconds
+
+                const tps = numberOfTransactions / actualTimeTaken;
+                console.log(`Actual TPS: ${tps}`);
+                fs.appendFileSync(tpsAndLatencyLog, `Actual TPS: ${tps} over ${actualTimeTaken}s\n`);
+
                 if (totalLatency > 0) {
                     measureLatency(totalLatency, numberOfTransactions);
                 }
+
+               
             };
 
-            await Promise.all([sendAndMeasure(), measureTPS()]);
-        }
-    }
+            await Promise.all([sendAndMeasure(), BlockGeneration()]);
 
-    async function measureTPS() {
-        const startBlockNumber = await provider.getBlockNumber();
-        await new Promise(resolve => setTimeout(resolve, measurementPeriod * 1000));
-
-        const endBlockNumber = await provider.getBlockNumber();
-        let transactionCount = 0;
-
-        for (let i = startBlockNumber; i <= endBlockNumber; i++) {
-            const block = await provider.getBlockWithTransactions(i);
-            transactionCount += block.transactions.filter(tx => tx.to === contractAddress).length;
+            
         }
 
-        const tps = transactionCount / measurementPeriod;
-        const BlockRate = (endBlockNumber / startBlockNumber) / measurementPeriod
-        const timestamp = new Date().toISOString();
-        console.log(`Throughput (TPS): ${tps} at ${timestamp}`);
-        fs.appendFileSync(tpsAndLatencyLog, `Throughput (TPS): ${tps} at ${timestamp}\n`);
-        fs.appendFileSync(tpsAndLatencyLog, `Blocks Produced: ${endBlockNumber - startBlockNumber}, Block Production Rate: ${BlockRate}/sec\n`);
+        async function BlockGeneration() {
+            const startBlockNumber = await provider.getBlockNumber();
+            await new Promise(resolve => setTimeout(resolve, 60 * 1000));
+
+            const endBlockNumber = await provider.getBlockNumber();
+            const BlockRate = (endBlockNumber - startBlockNumber) / 60
+            const timestamp = new Date().toISOString();
+            fs.appendFileSync(tpsAndLatencyLog, `Blocks Produced: ${endBlockNumber - startBlockNumber}, Block Production Rate: ${BlockRate}/sec at ${timestamp}\n`);
+        }
     }
 
     await sendTransactions(); // Send transactions
+
+   
 }
 
 // Export the function so it can be called from server.js

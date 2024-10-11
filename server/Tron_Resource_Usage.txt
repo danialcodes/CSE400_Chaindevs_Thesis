@@ -1,10 +1,7 @@
-Transaction 1 - CPU Used: -1.50%, Memory Used: 1.32 MB
-Transaction 2 - CPU Used: 6.20%, Memory Used: 2.42 MB
-Transaction 3 - CPU Used: -7.80%, Memory Used: 1.30 MB
-Transaction 4 - CPU Used: 0.00%, Memory Used: 0.14 MB
-Transaction 5 - CPU Used: 1.60%, Memory Used: 0.95 MB
-Transaction 6 - CPU Used: 0.00%, Memory Used: 1.21 MB
-Transaction 7 - CPU Used: 0.00%, Memory Used: -0.20 MB
-Transaction 8 - CPU Used: 0.00%, Memory Used: 0.29 MB
-Transaction 9 - CPU Used: 6.30%, Memory Used: 0.29 MB
-Transaction 10 - CPU Used: 0.00%, Memory Used: 0.21 MB
+Transaction 3 - CPU Used: 29.70%, Memory Used: 6.31 MB
+Transaction 7 - CPU Used: 0.00%, Memory Used: 5.82 MB
+Transaction 1 - CPU Used: 0.00%, Memory Used: 5.83 MB
+Transaction 4 - CPU Used: 0.00%, Memory Used: 5.83 MB
+Transaction 5 - CPU Used: 0.00%, Memory Used: 6.22 MB
+Transaction 2 - CPU Used: 0.00%, Memory Used: 6.04 MB
+Transaction 6 - CPU Used: 0.00%, Memory Used: 6.22 MB
