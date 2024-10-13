@@ -12,7 +12,7 @@ const resourceUsageLog = 'Tron_Resource_Usage.txt';
 // This function will be called from `server.js`
 async function executeTron(network, contractAddress, abi, functionName, params, numberOfTransactions) {
     // Initialize TronWeb instances for both wallets
-    const privateKeys = JSON.parse(process.env.TronprivateKeys);
+const privateKeys = JSON.parse(process.env.TronPrivateKeys2);
     const txIds = []
     const tronWeb = new TronWeb({
         fullHost: network,
@@ -93,7 +93,7 @@ async function executeTron(network, contractAddress, abi, functionName, params, 
                 const contractInstance = wallets[walletCount].contract(abi, contractAddress);
                 const transactionPromise = executeTransaction(contractInstance, functionName, params, i + 1);
                 transactionPromises.push(transactionPromise);
-                //await new Promise(resolve => setTimeout(resolve, 1000)); // 1-second interval between transactions
+                await new Promise(resolve => setTimeout(resolve, 1000)); // 1-second interval between transactions
                 walletCount++;
                 if (walletCount === wallets.length) {
                     walletCount = 0;
@@ -117,6 +117,7 @@ async function executeTron(network, contractAddress, abi, functionName, params, 
         };
 
         await Promise.all([sendAndMeasure(), BlockGeneration()]);
+        // await sendAndMeasure()
 
         async function BlockGeneration() {
             try {
@@ -135,7 +136,7 @@ async function executeTron(network, contractAddress, abi, functionName, params, 
             }
         }
 
-        await new Promise(resolve => setTimeout(resolve, 20000));
+        await new Promise(resolve => setTimeout(resolve, 40000));
 
         for (let i = 0; i < txIds.length; i++) {
             const transactionInfo = await fetchTransactionInfo(tronWeb, txIds[i]);

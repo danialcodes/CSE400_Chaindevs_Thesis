@@ -55,7 +55,7 @@ app.post('/execute', async (req, res) => {
 
         // Run Ethereum and Tron scripts in parallel
         await Promise.all([
-            executeEthereum(networks.Ethereum, contractAddresses.ethereum, abi, functionName, params, numberOfTransactions),
+            // executeEthereum(networks.Ethereum, contractAddresses.ethereum, abi, functionName, params, numberOfTransactions),
             executeTron(networks.Tron, contractAddresses.tron, abi, functionName, params, numberOfTransactions)
         ]);
 

@@ -13,7 +13,7 @@ const resourceUsageLog = 'Ethereum_Resource_Usage.txt';
 async function executeEthereum(network, contractAddress, contractAbi, functionName, params, numberOfTransactions) {
     // Initialize the Ethereum provider and wallet
     const provider = new ethers.providers.JsonRpcProvider(network);
-    const privateKeys = JSON.parse(process.env.privateKeys);
+    const privateKeys = JSON.parse(process.env.EthereumPrivateKeys);
     const wallets = [];
     for (let i = 0; i < privateKeys.length; i++) {
         const wallet = new ethers.Wallet(privateKeys[i], provider);

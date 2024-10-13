@@ -4,17 +4,17 @@ require('dotenv').config();
 // Initialize TronWeb instance (connect to Shasta testnet or mainnet)
 const tronWeb = new TronWeb({
     fullHost: 'https://api.shasta.trongrid.io',  // You can change this to 'https://api.trongrid.io' for mainnet
-    privateKey: "BD27E29730BA0017B00EA1CA62D355212334D739A8871CAE62D57A706EF82DC4"   // Replace with the private key or use from .env
+    privateKey: "C1E7CC8523BB141495F41DA7724B66304B786F90B45B33DC0E028903ADCF8A46"   // Replace with the private key or use from .env
 });
 
 // Sender's private key (wallet that holds TRX)
-const senderPrivateKey = "BD27E29730BA0017B00EA1CA62D355212334D739A8871CAE62D57A706EF82DC4"; // Put this in .env file for security
+const senderPrivateKey = "C1E7CC8523BB141495F41DA7724B66304B786F90B45B33DC0E028903ADCF8A46"; // Put this in .env file for security
 
 // Recipient's address (wallet that will receive the TRX)
-const recipientAddress = "TSvuRhhtB2dpsi22aS3HykTY3EPxpvkAb7";  // Replace with recipient address
+const recipientAddress = "TS7Nfzy7aNK7sdhZEUxTnnbE1ArBarkcNV";  // Replace with recipient address
 
 // Amount to send (in TRX, not in sun)
-const amountInTRX = 500; // Send 1 TRX (you can adjust this amount)
+const amountInTRX = 1000; // Send 1 TRX (you can adjust this amount)
 
 // Function to send TRX
 async function sendTRX() {

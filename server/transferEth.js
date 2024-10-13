@@ -3,11 +3,11 @@ require('dotenv').config();
 const provider = new ethers.providers.JsonRpcProvider(process.env.Holesky_Connect);
 
 // Sender's private key (wallet that holds faucet tokens)
-const senderPrivateKey = "0x8934ed8022a69c665ecf376548beacb3cc55b6079ce4bdefdd9577fe515ee268"; // Replace with the actual private key
+const senderPrivateKey = "0x7484f93b85beedc7aa836d78117d0242893402798c8273e30a18ea8fff47c50c"; // Replace with the actual private key
 const senderWallet = new ethers.Wallet(senderPrivateKey, provider);
 
 // Recipient's address (wallet that will receive the tokens)
-const recipientAddress = "0xc3207E1AAbF450e2adBab85a86fB466df1921D7F"; // Replace with the recipient's address
+const recipientAddress = "0x6A6DAe2bDe9cF9df3B871F18D46207ce9b410Ca2"; // Replace with the recipient's address
 
 const amountInEther = "0.5";
 

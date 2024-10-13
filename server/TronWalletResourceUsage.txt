@@ -1,7 +1,1 @@
-Trx Used : 2.61796: Energy Required: 5488: Bandwidth Required: 313
-Trx Used : 2.61796: Energy Required: 5488: Bandwidth Required: 313
-Trx Used : 2.61796: Energy Required: 5488: Bandwidth Required: 313
-Trx Used : 2.61796: Energy Required: 5488: Bandwidth Required: 313
-Trx Used : 2.61796: Energy Required: 5488: Bandwidth Required: 313
-Trx Used : 2.61796: Energy Required: 5488: Bandwidth Required: 313
-Trx Used : 2.61796: Energy Required: 5488: Bandwidth Required: 313
+Trx Used : 151.78664: Energy Required: 357142: Bandwidth Required: 1787

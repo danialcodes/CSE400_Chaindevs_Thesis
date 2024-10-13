@@ -6,7 +6,7 @@
 const { ethers } = require('ethers');
 require('dotenv').config();
 const provider = new ethers.providers.JsonRpcProvider(process.env.Holesky_Connect);
-const WalletAddresses = JSON.parse(process.env.Addresses);
+const WalletAddresses = JSON.parse(process.env.EthereumAddresses);
 async function checkBalance() {
     for(let i=0;i<WalletAddresses.length;i++){
         const balance = await provider.getBalance(WalletAddresses[i]);
