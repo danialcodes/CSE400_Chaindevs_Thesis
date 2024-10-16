@@ -30,7 +30,7 @@ async function fetchTransactionInfo(tronWeb, transactionID) {
         const transaction = await tronWeb.trx.getTransactionInfo(transactionID);
         const energyUsed = transaction.receipt.energy_usage_total || 0;
         const trxUsed = (transaction.fee || 0) / 1e6; // Convert from sun to TRX
-        const bandwidthUsed = (transaction.net_fee || 0) / 1e3;
+        const bandwidthUsed = (transaction.receipt.net_fee || 0) / 1e3;
         return { energyUsed, bandwidthUsed, trxUsed };
     } catch (error) {
         console.error('Error fetching transaction info:', error);
