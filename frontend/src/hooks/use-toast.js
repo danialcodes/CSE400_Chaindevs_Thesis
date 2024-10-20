@@ -1,4 +1,5 @@
-// Inspired by react-hot-toast library
+/* eslint-disable no-unused-vars */
+
 import * as React from "react"
 
 const TOAST_LIMIT = 1
