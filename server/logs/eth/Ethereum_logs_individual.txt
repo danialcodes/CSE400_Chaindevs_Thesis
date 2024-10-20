@@ -1,0 +1,12 @@
+
+Default gas Price
+Transaction 4, Response Time: 13.6191752s, Mempool Reaching Time: 4.872 Mempool Time: 8.747s
+Transaction 3, Response Time: 17.6483894s, Mempool Reaching Time: 3.112 Mempool Time: 14.536s
+Transaction 7, Response Time: 10.9954308s, Mempool Reaching Time: 4.375 Mempool Time: 6.62s
+Transaction 6, Response Time: 11.6726813s, Mempool Reaching Time: 3.767 Mempool Time: 7.905s
+Transaction 8, Response Time: 10.7848142s, Mempool Reaching Time: 3.089 Mempool Time: 7.696s
+Transaction 9, Response Time: 10.9645196s, Mempool Reaching Time: 3.535 Mempool Time: 7.429s
+Transaction 5, Response Time: 12.4753106s, Mempool Reaching Time: 3.607 Mempool Time: 8.868s
+Transaction 1, Response Time: 20.0027711s, Mempool Reaching Time: 5.688 Mempool Time: 14.315s
+Transaction 2, Response Time: 18.0666089s, Mempool Reaching Time: 3.775 Mempool Time: 14.291s
+Transaction 10, Response Time: 22.0868675s, Mempool Reaching Time: 4.468 Mempool Time: 17.619s

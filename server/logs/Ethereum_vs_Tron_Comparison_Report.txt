@@ -1,0 +1,15 @@
+
+1. TPS Comparison:
+Tron TPS: 4.919, Ethereum TPS: 0.453
+Tron is approximately 10.86 times faster than Ethereum in terms of TPS.
+
+2. Response Time Comparison:
+Tron Response Time: 1.066s, Ethereum Response Time: 14.832s
+Ethereum is approximately 13.92 times slower than Tron in terms of response time.
+
+3. Cost Comparison (in USD):
+Average Ether Used: 2.61910054400e-8 ETH (0.000069 USD)
+Average TRX Used: 1.047184 TRX (0.167549 USD)
+Tron is approximately 2426.24 times more expensive than Ethereum for these transactions in terms of USD.
+
+*** ***

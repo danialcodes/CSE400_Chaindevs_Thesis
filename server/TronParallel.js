@@ -4,15 +4,14 @@ const fs = require('fs');
 require('dotenv').config();
 
 // Log files for transactions and resource utilization
-const logFile = 'Tron_logs_individual.txt';
-const tpsAndLatencyLog = 'Tron_TPS&AvgLatency_log.txt';
-const tronWalletResource = 'TronWalletResourceUsage.txt';
-const resourceUsageLog = 'Tron_Resource_Usage.txt'; 
+const logFile = 'logs/tron/Tron_logs_individual.txt';
+const avgLogs = 'logs/tron/Tron_logs_Avg.txt';
+const tronWalletResource = 'logs/tron/TronWalletResourceUsage.txt';
 
 // This function will be called from `server.js`
 async function executeTron(network, contractAddress, abi, functionName, params, numberOfTransactions) {
     // Initialize TronWeb instances for both wallets
-const privateKeys = JSON.parse(process.env.TronPrivateKeys2);
+const privateKeys = JSON.parse(process.env.TronPrivateKeys);
     const txIds = []
     const tronWeb = new TronWeb({
         fullHost: network,
@@ -38,39 +37,30 @@ const privateKeys = JSON.parse(process.env.TronPrivateKeys2);
         async function fetchTransactionInfo(tronWeb, transactionID) {
             try {
                 const transaction = await tronWeb.trx.getTransactionInfo(transactionID);
-                const energyUsed = transaction.receipt.energy_usage_total || 0;
+                const energyUsed = transaction.receipt?.energy_usage_total || 0;
                 const trxUsed = (transaction.fee || 0) / 1e6; // Convert from sun to TRX
-                const bandwidthUsed = (transaction.receipt.net_fee || 0) / 1e3;
+                const bandwidthUsed = (transaction.receipt?.net_fee || 0) / 1e3;
                 return { energyUsed, bandwidthUsed, trxUsed };
             } catch (error) {
-                console.error('Error fetching transaction info:', error);
+                console.error('Tron ->Error fetching transaction info:', error);
                 return { energyUsed: 0, trxUsed: 0 };
             }
         }
 
         async function executeTransaction(contract, functionName, params, index) {
             try {
-                const beforeStats = await pidusage(process.pid); // Capture CPU/Memory before transaction
-
                 const startTime = Date.now();
                 const tx = await contract.methods[functionName](params.value).send(); // Dynamic function call
-                console.log(`Transaction ${index} sent`, tx);
+                console.log(`Tron ->Transaction ${index} sent`, tx);
 
                 const endTime = Date.now();
-                const latency = (endTime - startTime) / 1000;
-                console.log(`Transaction ${index}, Latency: ${latency}s`);
-
-                const afterStats = await pidusage(process.pid); // Capture CPU/Memory after transaction
-                const cpuUsage = (afterStats.cpu - beforeStats.cpu).toFixed(2);
-                const memoryUsage = ((afterStats.memory - beforeStats.memory) / 1024 / 1024).toFixed(2); // Convert memory to MB
-                // 
+                const responseTime = (endTime - startTime) / 1000;
+                console.log(`Tron  ->Transaction ${index}, Latency: ${responseTime}s`);
+ 
                 txIds.push(tx)
-                console.log(`CPU used: ${cpuUsage}%, Memory used: ${memoryUsage} MB for this transaction`);
-                fs.appendFileSync(resourceUsageLog, `Transaction ${index} - CPU Used: ${cpuUsage}%, Memory Used: ${memoryUsage} MB\n`);
-                fs.appendFileSync(logFile, `Transaction ${index}: Latency: ${latency}s\n`);
-                // 
+                fs.appendFileSync(logFile, `Transaction ${index}: Latency: ${responseTime}s\n`); 
 
-                return latency;
+                return responseTime;
             } catch (error) {
                 console.error(error);
                 return null;
@@ -78,16 +68,19 @@ const privateKeys = JSON.parse(process.env.TronPrivateKeys2);
         }
 
         // Measure average latency
-        function measureLatency(totalLatency, numOfTransactions) {
-            const averageLatency = totalLatency / numOfTransactions;
-            fs.appendFileSync(tpsAndLatencyLog, `Average Latency: ${averageLatency}s\n`);
+        function measureAvgResponseTime(totalResponseTime, numOfTransactions) {
+            const averageResponseTime = totalResponseTime / numOfTransactions;
+            fs.appendFileSync(avgLogs, `\nAverage Response Time: ${averageResponseTime}s\n`);
         }
 
-        
+        function measureAvgTrxUsed(totalTrxUsed,numberOfTransactions){
+            const avgTrxUsed = totalTrxUsed/numberOfTransactions
+            fs.appendFileSync(avgLogs, `\nAverage Trx Used: ${avgTrxUsed}s\n`);
+        }
 
         const sendAndMeasure = async () => {
             const transactionPromises = [];
-            let totalLatency = 0;
+            let totalResponseTime = 0;
             let walletCount = 0
             for (let i = 0; i < numberOfTransactions; i++) {
                 const contractInstance = wallets[walletCount].contract(abi, contractAddress);
@@ -99,25 +92,24 @@ const privateKeys = JSON.parse(process.env.TronPrivateKeys2);
                     walletCount = 0;
                 }
             }
-            const latencies = await Promise.all(transactionPromises);
-            latencies.forEach(latency => {
-                if (latency !== null) {
-                    totalLatency += latency;
+            const responseTimes = await Promise.all(transactionPromises);
+            responseTimes.forEach(responseTime => {
+                if (responseTime !== null) {
+                    totalResponseTime += responseTime;
                 }
             });
             
-            const TimeTaken = Math.max(...latencies)
+            const TimeTaken = Math.max(...responseTimes)
             const tps = numberOfTransactions / TimeTaken;
-            console.log(`Actual TPS: ${tps}`);
-            fs.appendFileSync(tpsAndLatencyLog, `TPS: ${tps} over ${TimeTaken}s\n`);
+            console.log(`Ethereum -> TPS: ${tps}`);
+            fs.appendFileSync(avgLogs, `\nTPS: ${tps} over ${TimeTaken}s\n`);
 
-            if (totalLatency > 0) {
-                measureLatency(totalLatency, numberOfTransactions);
+            if (totalResponseTime > 0) {
+                measureAvgResponseTime(totalResponseTime, numberOfTransactions);
             }
         };
 
         await Promise.all([sendAndMeasure(), BlockGeneration()]);
-        // await sendAndMeasure()
 
         async function BlockGeneration() {
             try {
@@ -130,21 +122,23 @@ const privateKeys = JSON.parse(process.env.TronPrivateKeys2);
                 const endBlockNum = endBlock.block_header.raw_data.number;
                 const BlockRate = (endBlockNum - startBlockNum) / 60
                 const timestamp = new Date().toISOString();
-                fs.appendFileSync(tpsAndLatencyLog, `Blocks Produced: ${endBlockNum - startBlockNum}, Block Production Rate: ${BlockRate}/sec at ${timestamp}\n`);
+                fs.appendFileSync(avgLogs, `Blocks Produced: ${endBlockNum - startBlockNum}, Block Production Rate: ${BlockRate}/sec at ${timestamp}\n`);
             } catch (error) {
-                console.error(`Error measuring throughput for:`, error);
+                console.error(`Tron ->Error measuring throughput for:`, error);
             }
         }
 
-        await new Promise(resolve => setTimeout(resolve, 40000));
-
+        await new Promise(resolve => setTimeout(resolve, 4000));
+        let totalTrxUsed = 0
         for (let i = 0; i < txIds.length; i++) {
             const transactionInfo = await fetchTransactionInfo(tronWeb, txIds[i]);
+            totalTrxUsed+=transactionInfo.trxUsed;
             fs.appendFileSync(tronWalletResource, `Trx Used : ${transactionInfo.trxUsed}: Energy Required: ${transactionInfo.energyUsed}: Bandwidth Required: ${transactionInfo.bandwidthUsed}\n`);
         }
+        measureAvgTrxUsed(totalTrxUsed,txIds.length)
     }
 
-    await sendTransactions(); // Send transactions
+    await sendTransactions(); 
 }
 
 

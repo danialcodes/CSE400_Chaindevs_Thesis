@@ -1,0 +1,7 @@
+
+TPS: 4.918839153959666 over 2.033s
+
+Average Response Time: 1.0657s
+Blocks Produced: 19, Block Production Rate: 0.31666666666666665/sec at 2024-10-19T14:28:18.637Z
+
+Average Trx Used: 1.0471840000000001s

@@ -1,3 +1,0 @@
-TPS: 0.33557046979865773 over 2.98s
-Average Latency: 2.98s
-Blocks Produced: 21, Block Production Rate: 0.35/sec at 2024-10-12T14:24:48.599Z

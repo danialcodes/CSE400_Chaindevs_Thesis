@@ -1,0 +1,10 @@
+Trx Used : 2.61796: Energy Required: 5488: Bandwidth Required: 313
+Trx Used : 2.61796: Energy Required: 5488: Bandwidth Required: 313
+Trx Used : 2.61796: Energy Required: 5488: Bandwidth Required: 313
+Trx Used : 2.61796: Energy Required: 5488: Bandwidth Required: 313
+Trx Used : 0: Energy Required: 0: Bandwidth Required: undefined
+Trx Used : 0: Energy Required: 0: Bandwidth Required: undefined
+Trx Used : 0: Energy Required: 0: Bandwidth Required: undefined
+Trx Used : 0: Energy Required: 0: Bandwidth Required: undefined
+Trx Used : 0: Energy Required: 0: Bandwidth Required: undefined
+Trx Used : 0: Energy Required: 0: Bandwidth Required: undefined

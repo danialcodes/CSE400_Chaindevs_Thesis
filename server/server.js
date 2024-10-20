@@ -2,15 +2,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
+const cors = require('cors');
 const executeEthereum = require('./EthereumParallel.js');
 const executeTron = require('./TronParallel.js');
+const { generateComparisonReport } = require('./analyzer');
 require('dotenv').config();
 
 const app = express();
 app.use(bodyParser.json());
-app.get('/', (req, res) => {
-    res.send('Hello from the server!');
-});
+app.use(cors());
 app.post('/execute', async (req, res) => {
     const { networks, contractAddresses, abi, functionName, params, numberOfTransactions } = req.body;
 
@@ -19,32 +19,31 @@ app.post('/execute', async (req, res) => {
     }
 
     // Paths to the generated text files
-    const ethereumLogFile = path.join(__dirname, 'Ethereum_logs_individual.txt');
-    const ethTPSLogFile = path.join(__dirname, 'Eth_TPS&AvgLatency_log.txt');
-    const ethWalletResourceFile = path.join(__dirname, "EthWalletResourceUsage.txt");
-    const ethResourceLogFile = path.join(__dirname, 'Ethereum_Resource_Usage.txt');
+    const ethereumLogFile = path.join(__dirname, 'logs/eth/Ethereum_logs_individual.txt');
+    const ethAvgLogFile = path.join(__dirname, 'logs/eth/Eth_logs_Avg.txt');
+    const ethWalletResourceFile = path.join(__dirname, "logs/eth/EthWalletResourceUsage.txt");
 
-    const tronLogFile = path.join(__dirname, 'Tron_logs_individual.txt'); // Assuming you have a similar file for Tron
-    const tronTPSLogFile = path.join(__dirname, 'Tron_TPS&AvgLatency_log.txt');
-    const tronWalletResourceFile = path.join(__dirname, 'TronWalletResourceUsage.txt');
-    const tronResourceLogFile = path.join(__dirname, 'Tron_Resource_Usage.txt');
+    const tronLogFile = path.join(__dirname, 'logs/tron/Tron_logs_individual.txt');
+    const tronAvgLogFile = path.join(__dirname, 'logs/tron/Tron_logs_Avg.txt');
+    const tronWalletResourceFile = path.join(__dirname, 'logs/tron/TronWalletResourceUsage.txt');
 
+    // Path for the comparison report file
+    const comparisonReportFile = path.join(__dirname, 'logs/Ethereum_vs_Tron_Comparison_Report.txt');
 
     // Function to delete old files
     const deleteOldFiles = () => {
         const filesToDelete = [
             ethereumLogFile,
-            ethTPSLogFile,
+            ethAvgLogFile,
             ethWalletResourceFile,
-            ethResourceLogFile,
             tronLogFile,
-            tronTPSLogFile,
+            tronAvgLogFile,
             tronWalletResourceFile,
-            tronResourceLogFile,
+            comparisonReportFile
         ];
 
         filesToDelete.forEach(file => {
-            if (fs.existsSync(file)) { // Check if the file exists before trying to delete
+            if (fs.existsSync(file)) {
                 fs.unlinkSync(file);
                 console.log(`Deleted old file: ${file}`);
             }
@@ -57,36 +56,32 @@ app.post('/execute', async (req, res) => {
 
         // Run Ethereum and Tron scripts in parallel
         await Promise.all([
-            // executeEthereum(networks.Ethereum, contractAddresses.ethereum, abi, functionName, params, numberOfTransactions),
+            executeEthereum(networks.Ethereum, contractAddresses.ethereum, abi, functionName, params, numberOfTransactions),
             executeTron(networks.Tron, contractAddresses.tron, abi, functionName, params, numberOfTransactions)
         ]);
 
-        // Read file contents
-        const ethereumLogs = fs.readFileSync(ethereumLogFile, 'utf8');
-        const ethTPSLogs = fs.readFileSync(ethTPSLogFile, 'utf8');
-        const ethWalletResourceLogs = fs.readFileSync(ethWalletResourceFile, 'utf8');
-        const ethResourceLogs = fs.readFileSync(ethResourceLogFile, 'utf8');
+        // Read Ethereum and Tron logs
+        const ethAvgLogs = fs.readFileSync(ethAvgLogFile, 'utf8');
+        const tronAvgLogs = fs.readFileSync(tronAvgLogFile, 'utf8');
 
-        const tronLogs = fs.readFileSync(tronLogFile, 'utf8');
-        const tronTPSLogs = fs.readFileSync(tronTPSLogFile, 'utf8');
-        const tronWalletResourceLogs = fs.readFileSync(tronWalletResourceFile, 'utf8');
-        const tronResourceLogs = fs.readFileSync(tronResourceLogFile, 'utf8');
-        // Send the contents as response
+        // Generate the comparison report
+        const comparisonAnalysis = generateComparisonReport(ethAvgLogs, tronAvgLogs);
+
+        // Save the comparison report to file
+        fs.writeFileSync(comparisonReportFile, comparisonAnalysis);
+
+        // only returning the avg and the comparison report in json
         res.status(200).json({
-            message: 'Transactions executed successfully.',
-            ethereumLogs,
-            ethTPSLogs,
-            ethWalletResourceLogs,
-            ethResourceLogs,
-            tronLogs,
-            tronTPSLogs,
-            tronWalletResourceLogs,
-            tronResourceLogs,
+            message: 'Transactions executed and comparison report generated successfully.',
+            ethereumLogs: ethAvgLogs, 
+            tronLogs: tronAvgLogs,
+            comparisonReport: comparisonAnalysis
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
