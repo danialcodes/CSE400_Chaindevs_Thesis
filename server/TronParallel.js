@@ -2,17 +2,21 @@ const TronWeb = require('tronweb');
 const pidusage = require('pidusage');
 const fs = require('fs');
 require('dotenv').config();
-
+const path = require('path');
 // Log files for transactions and resource utilization
-const logFile = 'Tron_logs_individual.txt';
-const tpsAndLatencyLog = 'Tron_TPS&AvgLatency_log.txt';
-const tronWalletResource = 'TronWalletResourceUsage.txt';
-const resourceUsageLog = 'Tron_Resource_Usage.txt'; 
+// const logFile = 'Tron_logs_individual.txt';
+// const tpsAndLatencyLog = 'Tron_TPS&AvgLatency_log.txt';
+// const tronWalletResource = 'TronWalletResourceUsage.txt';
+// const resourceUsageLog = 'Tron_Resource_Usage.txt'; 
 
+const logFile = path.join(__dirname, 'logs/Tron_logs_individual.txt');
+const tpsAndLatencyLog = path.join(__dirname, 'logs/Tron_TPS&AvgLatency_log.txt');
+const tronWalletResource = path.join(__dirname, 'logs/TronWalletResourceUsage.txt');
+const resourceUsageLog = path.join(__dirname, 'logs/Tron_Resource_Usage.txt');
 // This function will be called from `server.js`
 async function executeTron(network, contractAddress, abi, functionName, params, numberOfTransactions) {
     // Initialize TronWeb instances for both wallets
-const privateKeys = JSON.parse(process.env.TronPrivateKeys2);
+const privateKeys = JSON.parse(process.env.TronPrivateKeys);
     const txIds = []
     const tronWeb = new TronWeb({
         fullHost: network,

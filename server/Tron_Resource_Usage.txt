@@ -1,1 +1,0 @@
-Transaction 1 - CPU Used: 3.67%, Memory Used: 2.86 MB
